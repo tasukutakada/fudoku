@@ -1,0 +1,14 @@
+{
+  "name": "ふよみドリル",
+  "short_name": "ふよみドリル",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#03050c",
+  "theme_color": "#03050c",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
