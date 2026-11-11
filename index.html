@@ -234,6 +234,19 @@ body.intro .wrap{visibility:hidden}
   .bubble .kana{font-size:30px} .tab{padding:7px 12px}
 }
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+/* ===== one-screen fit (tablet / phone): no page scroll when the screen is tall enough ===== */
+@media (min-height:560px){
+  html{height:100%;box-sizing:border-box}
+  body{height:100%;box-sizing:border-box;overflow:hidden;padding-block:10px}
+  .wrap{height:100%;max-width:1000px;gap:10px}
+  .wrap>*{flex:0 0 auto}
+  .card{flex:1 1 auto;min-height:150px;display:flex;align-items:center;justify-content:center;padding:4px 8px}
+  .card #staff{width:100%;height:100%;max-height:100%}
+  .bubble{min-height:0;height:clamp(50px,8vh,72px);padding-block:4px}
+  .bubble .kana{font-size:clamp(26px,4.5vh,36px)}
+  .keys{height:clamp(120px,25vh,250px)}
+  .actions .act{padding:7px 16px}
+}
 </style>
 
 </head>
@@ -782,6 +795,10 @@ function sfxLaunch(){ if(!opt.sfx) return; try{ const t=ac().currentTime+0.05;
 function startMission(){ ac(); crawl.hidden=true; document.body.classList.remove("intro"); warp(1300,18); missionNo=0; resetRound(); }
 
 
+// wide & short staff screen (tablet landscape): crop the empty band above the staff so notes get bigger
+function fitStaff(){ const c=$("card"); if(!c.clientHeight) return; svg.setAttribute("viewBox", c.clientWidth/c.clientHeight>2.0?"0 14 400 174":"0 -36 400 226"); }
+try{ new ResizeObserver(fitStaff).observe($("card")); }catch(e){ addEventListener("resize",fitStaff); }
+fitStaff();
 buildKeys(); buildPad(); newQuestion(); missionNo=1; if(opt.round>0) showBanner("MISSION 1");
 if(document.fonts) document.fonts.ready.then(()=>{ if(current&&!answered&&!busy){ drawStaff(svg,current.clef); drawNote(svg,current.clef,current.d,250); if(opt.learn) drawKana(svg,current.clef,current.d,250,KCOL(current.d)); } });
 </script>
