@@ -542,7 +542,7 @@ function answer(i){
   if(ok){stats.correct++;stats.streak++;} else stats.streak=0; renderStats();
   roundRes.push(ok); renderProg();
   const pressed=nearestD(i,current.d);
-  if(ok) play(current.d); else setTimeout(()=>play(pressed),opt.sfx?420:0);
+  play(pressed);  // always just the key that was pressed
   keysEl.querySelectorAll(".key").forEach(k=>k.disabled=true);
   keysEl.children[correct].classList.add("right");
   if(!ok) keysEl.children[i].classList.add("wrong");
@@ -556,7 +556,6 @@ function answer(i){
     timer=setTimeout(newQuestion,milestone?1800:1200);
   }else{
     setBubble("ng",`<span>ミス！ おしたのは ${NAMES[i].kana}　こたえは</span><span class="kana">${lab.kana}</span><span class="eng">${lab.en}</span>`);
-    sfxWrong();
     nextBtn.textContent=(opt.round>0&&roundRes.length>=opt.round)?"けっかを みる":"つぎへ";
     nextBtn.hidden=false;
   }
