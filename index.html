@@ -436,8 +436,8 @@ function sfxCorrect(big){ if(!opt.sfx) return; try{
   if(big){ boom(t+0.3); [1047,1319,1568,2093].forEach(f=>tone(f,t+0.3,0.8,{type:"triangle",vol:.07})); }
 }catch(e){} }
 function sfxWrong(){ if(!opt.sfx) return; try{
-  const t=ac().currentTime+0.35;
-  tone(900,t,0.35,{type:"sawtooth",vol:.05,to:90,lp:2500}); tone(110,t+0.05,0.55,{type:"square",vol:.07,to:45,lp:800}); boom(t+0.05);
+  const t=ac().currentTime;  // short buzz first, then the pressed note is heard clearly
+  tone(900,t,0.25,{type:"sawtooth",vol:.05,to:90,lp:2500}); tone(110,t+0.03,0.3,{type:"square",vol:.06,to:45,lp:800});
 }catch(e){} }
 function sfxFanfare(perfect,r){ if(!opt.sfx) return; try{
   const t=ac().currentTime+0.15;
@@ -483,6 +483,8 @@ function drawKana(S,clef,d,x,color,y,size=22){
 const nameLabel=d=>({kana:NAMES[d%7].kana,en:NAMES[d%7].en+Math.floor(d/7)});
 
 // ---------- quiz ----------
+// the pressed key's pitch, taken in the octave closest to the question note
+function nearestD(i,d){ const base=Math.floor(d/7)*7+i; return [base-7,base,base+7].reduce((a,b)=>Math.abs(b-d)<Math.abs(a-d)?b:a); }
 const OK_MSG=["ナイスショット！","ヒット！","みごと！","かんぺき！","グッジョブ！"];
 function buildKeys(){
   NAMES.forEach((n,i)=>{
@@ -539,7 +541,8 @@ function answer(i){
   stopLoop(); answered=true; const correct=current.d%7, ok=i===correct;
   if(ok){stats.correct++;stats.streak++;} else stats.streak=0; renderStats();
   roundRes.push(ok); renderProg();
-  play(current.d);
+  const pressed=nearestD(i,current.d);
+  if(ok) play(current.d); else setTimeout(()=>play(pressed),opt.sfx?420:0);
   keysEl.querySelectorAll(".key").forEach(k=>k.disabled=true);
   keysEl.children[correct].classList.add("right");
   if(!ok) keysEl.children[i].classList.add("wrong");
@@ -552,7 +555,7 @@ function answer(i){
     confetti(); sfxCorrect(milestone); warp(milestone?1300:450,milestone?24:6); if(milestone) setTimeout(confetti,250);
     timer=setTimeout(newQuestion,milestone?1800:1200);
   }else{
-    setBubble("ng",`<span>ミス！ こたえは</span><span class="kana">${lab.kana}</span><span class="eng">${lab.en}</span>`);
+    setBubble("ng",`<span>ミス！ おしたのは ${NAMES[i].kana}　こたえは</span><span class="kana">${lab.kana}</span><span class="eng">${lab.en}</span>`);
     sfxWrong();
     nextBtn.textContent=(opt.round>0&&roundRes.length>=opt.round)?"けっかを みる":"つぎへ";
     nextBtn.hidden=false;
